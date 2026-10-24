@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Boston Bike Safety — Hackachusetts 2026</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ── Header ─────────────────────────────────────────────────────────── -->
+  <header>
+    <div class="header-inner">
+      <h1>🚲 Boston Bike Safety</h1>
+      <p class="tagline">Crash hotspots &amp; safe cycling routes — powered by Vision Zero data</p>
+    </div>
+  </header>
+
+  <!-- ── Main layout ────────────────────────────────────────────────────── -->
+  <main>
+
+    <!-- Sidebar -->
+    <aside id="sidebar">
+
+      <!-- Route planner -->
+      <section class="card" id="route-card">
+        <h2>Plan a Bike Route</h2>
+        <label for="origin">From</label>
+        <input id="origin" type="text" placeholder="Start address or landmark" autocomplete="off" />
+
+        <label for="destination">To</label>
+        <input id="destination" type="text" placeholder="End address or landmark" autocomplete="off" />
+
+        <button id="route-btn" class="btn-primary">Find Safe Route</button>
+        <button id="clear-btn" class="btn-secondary">Clear</button>
+
+        <div id="route-summary" class="hidden">
+          <div class="summary-row"><span class="label">Route</span><span id="route-name">—</span></div>
+          <div class="summary-row"><span class="label">Distance</span><span id="route-dist">—</span></div>
+          <div class="summary-row"><span class="label">Est. time</span><span id="route-time">—</span></div>
+          <div id="route-warnings" class="warning hidden"></div>
+        </div>
+      </section>
+
+      <!-- Turn-by-turn -->
+      <section class="card hidden" id="steps-card">
+        <h2>Directions</h2>
+        <ol id="steps-list"></ol>
+      </section>
+
+      <!-- Legend -->
+      <section class="card" id="legend-card">
+        <h2>Map Legend</h2>
+        <ul class="legend">
+          <li><span class="dot dot-bike"></span> Bike crash</li>
+          <li><span class="dot dot-ped"></span>  Pedestrian crash</li>
+          <li><span class="dot dot-mv"></span>   Motor-vehicle crash</li>
+          <li><span class="dot dot-obs"></span>  Bike-lane obstruction</li>
+        </ul>
+        <div class="legend-filters">
+          <label><input type="checkbox" id="chk-bike" checked /> Bike crashes</label>
+          <label><input type="checkbox" id="chk-ped"  checked /> Pedestrian crashes</label>
+          <label><input type="checkbox" id="chk-mv"   checked /> MV crashes</label>
+          <label><input type="checkbox" id="chk-obs"  checked /> Obstructions</label>
+        </div>
+      </section>
+
+      <!-- Stats -->
+      <section class="card" id="stats-card">
+        <h2>Dataset Stats</h2>
+        <ul id="stats-list" class="stats"></ul>
+      </section>
+
+    </aside>
+
+    <!-- Map -->
+    <div id="map"></div>
+
+  </main>
+
+  <!-- ── Scripts ────────────────────────────────────────────────────────── -->
+  <!--
+    IMPORTANT: Replace YOUR_API_KEY below with your Google Maps API key.
+    Restrict the key by HTTP referrer in Google Cloud Console so it cannot be
+    misused by others who view the page source.
+    e.g.  https://YOUR_GITHUB_USERNAME.github.io/*
+  -->
+  <script
+    src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places,geometry&callback=initMap"
+    async defer>
+  </script>
+  <script src="app.js"></script>
+
+</body>
+</html>

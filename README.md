@@ -92,3 +92,82 @@ the outcome, and only records clearing all four are written:
 
 The end-of-run summary reports total read, total verified, excluded counts by
 reason, and a per-file verified breakdown.
+
+
+---
+
+## Web app (GitHub Pages)
+
+The `docs/` folder is a self-contained static web app. It shows all crash and
+obstruction data on an interactive Google Map and lets users plan a cycling
+route between any two Boston addresses.
+
+### File structure
+
+```
+docs/
+├── index.html          — page shell, loads Maps SDK
+├── style.css           — layout and component styles
+├── app.js              — all map, marker, and routing logic
+└── data/
+    ├── dispatch.json   — 1 000 crash-dispatch records (generated from CSV)
+    └── obstructions.json — 28 verified bike-lane obstruction records
+```
+
+### One-time setup: add your API key
+
+1. Open `docs/index.html`.
+2. Find the `<script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY…">` tag near the bottom.
+3. Replace `YOUR_API_KEY` with your Google Maps API key.
+4. In [Google Cloud Console → Credentials](https://console.cloud.google.com/apis/credentials), add an **HTTP referrer restriction**:
+   ```
+   https://YOUR_GITHUB_USERNAME.github.io/*
+   ```
+   This prevents the key from being used by other sites even though it is visible in the HTML source.
+
+**Never commit a `.env` file** — the `.gitignore` already blocks `*.env` and `API_KEY.env`.
+
+### Regenerate the data JSON (after updating CSVs)
+
+```bash
+python3 - <<'EOF'
+import csv, json
+
+dispatch = []
+with open("boston_dispatch_data.csv") as f:
+    for row in csv.DictReader(f):
+        try:
+            dispatch.append({"id": row["_id"], "date": row["dispatch_ts"],
+                "mode": row["mode_type"], "type": row["location_type"],
+                "street": row["street"], "xstreet1": row["xstreet1"],
+                "xstreet2": row["xstreet2"],
+                "lat": float(row["lat"]), "lng": float(row["long"])})
+        except (ValueError, KeyError): pass
+
+obstructions = []
+with open("verified_bike_lane_obstructions.csv") as f:
+    for row in csv.DictReader(f):
+        try:
+            obstructions.append({"id": row["case_id"], "topic": row["case_topic"],
+                "service": row["service_name"], "comment": row["closure_comments"],
+                "lat": float(row["latitude"]), "lng": float(row["longitude"])})
+        except (ValueError, KeyError): pass
+
+with open("docs/data/dispatch.json", "w") as f:
+    json.dump(dispatch, f, separators=(",", ":"))
+with open("docs/data/obstructions.json", "w") as f:
+    json.dump(obstructions, f, separators=(",", ":"))
+print(f"Wrote {len(dispatch)} dispatch + {len(obstructions)} obstruction records.")
+EOF
+```
+
+### Deploy to GitHub Pages
+
+1. Push this repo to GitHub.
+2. Go to **Settings → Pages** in your repository.
+3. Under *Source*, choose **Deploy from a branch**.
+4. Set branch to `main` (or whatever your default branch is) and folder to `/docs`.
+5. Click **Save**. GitHub will publish the site at:
+   ```
+   https://YOUR_GITHUB_USERNAME.github.io/REPO_NAME/
+   ```
