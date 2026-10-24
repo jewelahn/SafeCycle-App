@@ -1,0 +1,7 @@
+# Development/test dependencies for the Bike Lane Obstruction Filter.
+#
+# The production filter itself uses ONLY the Python 3 standard library (the
+# `csv` module) and has no runtime dependencies. These packages are needed only
+# to run the test suite, which includes property-based tests.
+hypothesis>=6.0
+pytest>=7.0
